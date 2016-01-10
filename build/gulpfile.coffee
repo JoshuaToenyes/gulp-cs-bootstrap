@@ -1,8 +1,8 @@
+gulp        = require('gulp-help')(require 'gulp')
 _           = require 'lodash'
 fs          = require 'fs'
 path        = require 'path'
 yargs       = require 'yargs'
-gulp        = require 'gulp'
 sourcemaps  = require 'gulp-sourcemaps'
 coffeelint  = require 'gulp-coffeelint'
 clean       = require 'gulp-clean'
@@ -43,7 +43,7 @@ else
 
 
 # Compiles all CoffeeScript files into a single concatenated JavaScript file.
-gulp.task 'coffee', ->
+gulp.task 'coffee', 'Transpiles CoffeeScript to JavaScript', ->
   gulp.src config.path.src.coffee + '/**/*.coffee'
   .pipe sourcemaps.init()
   .pipe concat(config.app.main)
@@ -54,15 +54,19 @@ gulp.task 'coffee', ->
 
 
 # Bundles this project as defined by the Webpack configuration file.
-gulp.task 'bundle', ->
+gulp.task 'bundle', 'Bundles project files using Webpack.', ->
   gulp.src config.path.src.coffee + '/' + config.app.entry
   .pipe webpack webpackConfig
   .pipe gulp.dest config.path.target.js
   .on 'error', gutil.log
+, {
+  options:
+    'production': 'Bundle for production environment.'
+}
 
 
 # Compresses the transpiled JavaScript using UglifyJS.
-gulp.task 'uglify', ->
+gulp.task 'uglify', 'Minifies JavaScript files.', ->
   gulp.src config.path.target.js + '/**/*.js'
   .pipe rename (p) ->
     p.extname = '.min.js'
@@ -74,13 +78,16 @@ gulp.task 'uglify', ->
 
 
 # Cleans project paths.
-gulp.task 'clean', ->
+gulp.task 'clean', 'Cleans project paths.', ->
   cleanPaths = _.values(config.path.target).concat [config.path.tmp]
   del cleanPaths
   .then (paths) ->
     gutil.log 'Deleted files and folders: \n\t', paths.join('\t\n')
 
 
-
-gulp.task 'compile', ->
+gulp.task 'build', 'Builds the project.', ->
   runsequence 'clean', 'bundle', 'uglify'
+, {
+  options:
+    'production': 'Build for production environment.'
+}

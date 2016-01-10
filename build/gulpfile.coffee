@@ -11,9 +11,11 @@ git         = require 'gulp-git'
 gulp        = require('gulp-help')(require 'gulp')
 gulpif      = require 'gulp-if'
 gutil       = require 'gulp-util'
+open        = require 'gulp-open'
 path        = require 'path'
 rename      = require 'gulp-rename'
 runsequence = require 'run-sequence'
+shell       = require 'gulp-shell'
 sourcemaps  = require 'gulp-sourcemaps'
 tag         = require 'gulp-tag-version'
 watch       = require 'gulp-watch'
@@ -88,7 +90,11 @@ gulp.task 'bundle', 'Bundles project files using Webpack.', ->
 
 # Cleans project paths.
 gulp.task 'clean', 'Cleans project paths.', ->
-  cleanPaths = [config.path.target, config.path.tmp]
+  cleanPaths = [
+    config.path.target
+    config.path.tmp
+    config.path.doc
+  ]
   del cleanPaths
   .then (paths) ->
     gutil.log 'Deleted files and folders: \n\t', paths.join('\t\n')
@@ -109,6 +115,17 @@ gulp.task 'build', 'Builds the project.', ->
 gulp.task 'tag', 'Tags the project at it\'s current version.', ->
   gulp.src ['./package.json']
   .pipe tag()
+
+
+# Register task to generate project documentation using Groc.
+gulp.task 'doc', 'Generates Groc documentation.', shell.task [
+    './node_modules/groc/bin/groc'
+  ]
+
+
+gulp.task 'opendocs', 'Opens the docs in the defaul browser', ['doc'], ->
+  gulp.src 'doc/index.html'
+  .pipe open()
 
 
 # Generate tasks for bumping project versions and tagging.

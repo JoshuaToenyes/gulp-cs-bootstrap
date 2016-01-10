@@ -1,0 +1,15 @@
+{
+  "glob": [
+    "src/**/*",
+    "build/**/*",
+    "README.md"
+  ],
+  "except": [
+    "./node_modules",
+    "./lib",
+    "./doc"
+  ],
+  "style": "./node_modules/groc-template-clean",
+  "repository-url": "https://github.com/JoshuaToenyes/gulp-cs-bootstrap",
+  "no-strip": true
+}

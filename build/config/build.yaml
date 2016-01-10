@@ -15,26 +15,28 @@ path:
     jade:       src/jade
 
   # Library directory for non-package-manager libraries.
-  lib:        lib
+  lib:          lib
 
   # Tests directory.
-  test:       test
+  test:         test
 
   # Output target directories.
-  target:     dist
+  target:       dist
 
   # Assets directory.
-  assets:     assets
+  assets:       assets
 
   # Directory for temporary build-time use.
-  tmp:        tmp
+  tmp:          tmp
 
   # Sourcemaps directory names. These should be relative to the respective
   # target directories.
   maps:
-    js:       maps
-    sass:     maps
+    js:         maps
+    sass:       maps
 
+  # Generated documentation glob.
+  doc:          doc
 
 # Build options passed to tools in the gulpfile.
 options:

@@ -1,3 +1,4 @@
+_           = require 'lodash'
 fs          = require 'fs'
 path        = require 'path'
 yargs       = require 'yargs'
@@ -20,7 +21,6 @@ uglify      = require 'gulp-uglify'
 rename      = require 'gulp-rename'
 webpack     = require 'webpack-stream'
 runsequence = require 'run-sequence'
-webpackCfg  = require __dirname + '/config/webpack.config.coffee'
 
 
 # Grab command line arguments.
@@ -30,6 +30,16 @@ argv = yargs.argv
 # Load and parse the build configuration.
 config = yaml.safeLoad fs.readFileSync __dirname + '/config/build.yaml'
 
+
+# Load the webpack config file.
+webpackConfig = require __dirname + '/config/webpack.config.coffee'
+
+
+# Set production/debug options.
+if argv.production
+  _.merge webpackConfig, config.options.production.webpack
+else
+  _.merge webpackConfig, config.options.debug.webpack
 
 # Compiles all CoffeeScript files into a single concatenated JavaScript file.
 gulp.task 'coffee', ->
@@ -45,7 +55,7 @@ gulp.task 'coffee', ->
 # Bundles this project as defined by the Webpack configuration file.
 gulp.task 'bundle', ->
   gulp.src config.path.src.coffee + '/' + config.app.entry
-  .pipe webpack webpackCfg
+  .pipe webpack webpackConfig
   .pipe gulp.dest config.path.target
   .on 'error', gutil.log
 

@@ -36,3 +36,23 @@ path:
   maps:
     coffee:   dist/js/maps
     sass:     dist/css/maps
+
+
+# Build options passed to tools in the gulpfile.
+options:
+
+  # Production specific options.
+  production:
+
+    # Webpack production options.
+    webpack:
+      output:
+        publicPath: http://yourcdn.com/
+
+  # Debug (default for development) options.
+  debug:
+
+    # Webpack debug options.
+    webpack:
+      output:
+        publicPath: /gulp-cs-bootstrap/dist/

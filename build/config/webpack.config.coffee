@@ -23,9 +23,7 @@ module.exports =
   # resolved and concatenated.
   # @see https://webpack.github.io/docs/configuration.html#output
   output:
-    path: __dirname + '/app/webpack'
     filename: config.app.main
-    publicPath: '/dist/'
     pathinfo: true
     sourceMapFilename: 'maps/[file].map'
 

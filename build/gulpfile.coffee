@@ -41,14 +41,15 @@ if argv.production
 else
   _.merge webpackConfig, config.options.debug.webpack
 
+
 # Compiles all CoffeeScript files into a single concatenated JavaScript file.
 gulp.task 'coffee', ->
   gulp.src config.path.src.coffee + '/**/*.coffee'
   .pipe sourcemaps.init()
   .pipe concat(config.app.main)
   .pipe coffee()
-  .pipe sourcemaps.write config.path.maps.coffee
-  .pipe gulp.dest config.path.target
+  .pipe sourcemaps.write config.path.maps.js
+  .pipe gulp.dest config.path.target.js
   .on 'error', gutil.log
 
 
@@ -56,27 +57,25 @@ gulp.task 'coffee', ->
 gulp.task 'bundle', ->
   gulp.src config.path.src.coffee + '/' + config.app.entry
   .pipe webpack webpackConfig
-  .pipe gulp.dest config.path.target
+  .pipe gulp.dest config.path.target.js
   .on 'error', gutil.log
 
 
 # Compresses the transpiled JavaScript using UglifyJS.
 gulp.task 'uglify', ->
-  gulp.src config.path.target + '/**/*.js'
+  gulp.src config.path.target.js + '/**/*.js'
   .pipe rename (p) ->
     p.extname = '.min.js'
   .pipe sourcemaps.init loadMaps: true
   .pipe uglify()
-  .pipe sourcemaps.write config.path.maps.coffee
-  .pipe gulp.dest config.path.target
+  .pipe sourcemaps.write config.path.maps.js
+  .pipe gulp.dest config.path.target.js
   .on 'error', gutil.log
 
 
 # Cleans project paths.
 gulp.task 'clean', ->
-  cleanPaths = [
-    config.path.tmp
-    config.path.target]
+  cleanPaths = _.values(config.path.target).concat [config.path.tmp]
   del cleanPaths
   .then (paths) ->
     gutil.log 'Deleted files and folders: \n\t', paths.join('\t\n')

@@ -23,8 +23,11 @@ path:
   # Tests directory.
   test:       test
 
-  # Output target directory.
-  target:     dist
+  # Output target directories.
+  target:
+    js:       dist/js
+    css:      dist/css
+    html:     dist/html
 
   # Assets directory.
   assets:     assets
@@ -32,10 +35,11 @@ path:
   # Directory for temporary build-time use.
   tmp:        tmp
 
-  # Sourcemaps directory name.
+  # Sourcemaps directory names. These should be relative to the respective
+  # target directories.
   maps:
-    coffee:   dist/js/maps
-    sass:     dist/css/maps
+    js:       maps
+    sass:     maps
 
 
 # Build options passed to tools in the gulpfile.

@@ -1,0 +1,12 @@
+# Ignore annoying OS X files.
+.DS_Store
+
+# Ignore IDE directories.
+.idea
+
+# Ignore distribution directory.
+dist
+
+# Ignore lib directories.
+node_modules
+lib

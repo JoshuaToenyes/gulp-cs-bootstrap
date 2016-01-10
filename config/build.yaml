@@ -1,0 +1,13 @@
+app:
+  entry:    app.js
+  main:     app.js
+  min:      app.min.js
+
+path:
+  src:      src
+  lib:      lib
+  test:     test
+  target:   dist
+  assets:   assets
+  tmp:      tmp
+  maps:     maps

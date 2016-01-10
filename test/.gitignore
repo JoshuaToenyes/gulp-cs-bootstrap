@@ -1,2 +1,2 @@
-*
-!.gitignore
+# Ignore all JavaScript files in the test directory.
+*.js

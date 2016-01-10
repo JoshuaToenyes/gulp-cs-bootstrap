@@ -1,0 +1,38 @@
+app:
+
+  # Application entry points (single file or list).
+  entry:    bootstrap.coffee
+
+  # Bundled filename.
+  main:     app.js
+
+
+# Build paths. All paths should be relative to the project root.
+path:
+
+  # Source file directory.
+  src:
+    coffee:     src/coffee
+    sass:       src/sass
+    templates:  src/template
+    jade:       src/jade
+
+  # Library directory for non-package-manager libraries.
+  lib:        lib
+
+  # Tests directory.
+  test:       test
+
+  # Output target directory.
+  target:     dist
+
+  # Assets directory.
+  assets:     assets
+
+  # Directory for temporary build-time use.
+  tmp:        tmp
+
+  # Sourcemaps directory name.
+  maps:
+    coffee:   dist/js/maps
+    sass:     dist/css/maps

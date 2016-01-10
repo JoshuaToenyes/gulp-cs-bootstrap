@@ -1,3 +1,4 @@
+_    = require 'lodash'
 fs   = require 'fs'
 path = require 'path'
 yaml = require 'js-yaml'
@@ -16,14 +17,13 @@ module.exports =
 
 
   # The entry point for the bundle.
-  entry: "./#{config.app.entry}"
+  entry: config.app.entry
 
 
   # Various output options, to give us a single bundle.js file with everything
   # resolved and concatenated.
   # @see https://webpack.github.io/docs/configuration.html#output
   output:
-    pathinfo: true
     sourceMapFilename: 'maps/[file].map'
 
 

@@ -27,19 +27,41 @@ yargs       = require 'yargs'
 argv = yargs.argv
 
 
+# Pull Webpack plugin references.
+UglifyJsPlugin = webpack.webpack.optimize.UglifyJsPlugin
+
 # Load and parse the build configuration.
 config = yaml.safeLoad fs.readFileSync __dirname + '/config/build.yaml'
 
 
 # Load the webpack config file.
 webpackConfig = require __dirname + '/config/webpack.config.coffee'
+webpackConfig.plugins ?= []
 
 
 # Set production/debug options.
 if argv.production
+
+  # Merge-in production Webpack config.
   _.merge webpackConfig, config.options.production.webpack
+
+  # Instantiate production Webpack plugins.
+  uglifyJSPlugin = new UglifyJsPlugin(config.options.production.uglify)
+
+# Debug environment.
 else
+
+  # Merge debug Webpack config.
   _.merge webpackConfig, config.options.debug.webpack
+
+  # Instantiate production Webpack plugins.
+  uglifyJSPlugin = new UglifyJsPlugin(config.options.debug.uglify)
+
+
+# If we're not skipping UglifyJS compression, add-in the plugin.
+if !argv.skipUglifyjs
+  webpackConfig.plugins.push uglifyJSPlugin
+
 
 
 # Compiles all CoffeeScript files into a single concatenated JavaScript file.
@@ -65,18 +87,6 @@ gulp.task 'bundle', 'Bundles project files using Webpack.', ->
 }
 
 
-# Compresses the transpiled JavaScript using UglifyJS.
-gulp.task 'uglify', 'Minifies JavaScript files.', ->
-  gulp.src config.path.target + '/**/*.js'
-  .pipe rename (p) ->
-    p.extname = '.min.js'
-  .pipe sourcemaps.init loadMaps: true
-  .pipe uglify()
-  .pipe sourcemaps.write config.path.maps.js
-  .pipe gulp.dest config.path.target
-  .on 'error', gutil.log
-
-
 # Cleans project paths.
 gulp.task 'clean', 'Cleans project paths.', ->
   cleanPaths = [config.path.target, config.path.tmp]
@@ -87,10 +97,11 @@ gulp.task 'clean', 'Cleans project paths.', ->
 
 # Builds the entire project.
 gulp.task 'build', 'Builds the project.', ->
-  runsequence 'clean', 'bundle', 'uglify'
+  runsequence 'clean', 'bundle'
 , {
   options:
     'production': 'Build for production environment.'
+    'skip-uglifyjs': 'Skips compression with UglifyJS.'
 }
 
 

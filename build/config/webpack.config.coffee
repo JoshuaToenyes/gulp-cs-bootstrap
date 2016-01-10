@@ -23,7 +23,6 @@ module.exports =
   # resolved and concatenated.
   # @see https://webpack.github.io/docs/configuration.html#output
   output:
-    filename: config.app.main
     pathinfo: true
     sourceMapFilename: 'maps/[file].map'
 
@@ -42,6 +41,7 @@ module.exports =
       "#{__dirname}/../../#{config.path.src.coffee}"
       "#{__dirname}/../../#{config.path.src.sass}"
       "#{__dirname}/../../#{config.path.src.templates}"
+      "#{__dirname}/../../#{config.path.assets}"
     ]
 
     # Extensions used to resolve modules.
@@ -65,6 +65,11 @@ module.exports =
     loaders: [
       {test: /\.coffee$/, loader: 'coffee-loader' }
       {test: /\.jade$/, loader: 'jade-loader' }
+      {test: /\.(jpe?g|png|gif|svg)$/i
+      loaders: [
+        'file?hash=sha512&digest=hex&name=[hash].[ext]'
+        'image-webpack?bypassOnDebug&optimizationLevel=7&interlaced=false'
+      ]}
     ]
 
 

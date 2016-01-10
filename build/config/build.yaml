@@ -24,10 +24,7 @@ path:
   test:       test
 
   # Output target directories.
-  target:
-    js:       dist/js
-    css:      dist/css
-    html:     dist/html
+  target:     dist
 
   # Assets directory.
   assets:     assets

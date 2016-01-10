@@ -94,11 +94,18 @@ gulp.task 'build', 'Builds the project.', ->
 }
 
 
+# Simple task to tag the git repo at it's current version as-specified by
+# the package.json file.
+gulp.task 'tag', 'Tags the project at it\'s current version.', ->
+  gulp.src ['./package.json']
+  .pipe tag()
+
+
 # Generate tasks for bumping project versions and tagging.
 _.each {
-  patch: 'Bump the package patch version.'
-  minor: 'Bump the package minor version.'
-  major: 'Bump the package major version.'
+  patch: 'Bump and tags the package patch version.'
+  minor: 'Bump and tags the package minor version.'
+  major: 'Bump and tags the package major version.'
 }, (description, importance) ->
   gulp.task importance, description, ->
     gulp.src ['./package.json']
@@ -106,4 +113,4 @@ _.each {
     .pipe gulp.dest './'
     .pipe git.commit "Bumps package #{importance} version."
     .pipe filter 'package.json'
-    .pipe tag_version()
+    .pipe tag()

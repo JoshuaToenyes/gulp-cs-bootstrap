@@ -1,12 +1,8 @@
 {
-  "name": "coffeed",
-  "description": "Another documentation generator for CoffeeScript.",
+  "name": "gulp-cs-boostrap",
+  "description": "Bootstrap project.",
   "author": "Joshua Toenyes <joshua.toenyes@me.com>",
-  "bin": {
-    "coffeed": "./dist/cli.js"
-  },
-  "private": false,
-  "version": "0.1.0-beta.1",
+  "version": "0.0.0",
   "dependencies": {},
   "devDependencies": {
     "chai": "~3.4",

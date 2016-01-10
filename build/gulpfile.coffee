@@ -1,26 +1,26 @@
-gulp        = require('gulp-help')(require 'gulp')
 _           = require 'lodash'
-fs          = require 'fs'
-path        = require 'path'
-yargs       = require 'yargs'
-sourcemaps  = require 'gulp-sourcemaps'
-coffeelint  = require 'gulp-coffeelint'
-clean       = require 'gulp-clean'
-watch       = require 'gulp-watch'
 bump        = require 'gulp-bump'
-tag         = require 'gulp-tag-version'
-git         = require 'gulp-git'
-gulpif      = require 'gulp-if'
-filter      = require 'gulp-filter'
+clean       = require 'gulp-clean'
 coffee      = require 'gulp-coffee'
+coffeelint  = require 'gulp-coffeelint'
 concat      = require 'gulp-concat'
-gutil       = require 'gulp-util'
-yaml        = require 'js-yaml'
 del         = require 'del'
-uglify      = require 'gulp-uglify'
+filter      = require 'gulp-filter'
+fs          = require 'fs'
+git         = require 'gulp-git'
+gulp        = require('gulp-help')(require 'gulp')
+gulpif      = require 'gulp-if'
+gutil       = require 'gulp-util'
+path        = require 'path'
 rename      = require 'gulp-rename'
-webpack     = require 'webpack-stream'
 runsequence = require 'run-sequence'
+sourcemaps  = require 'gulp-sourcemaps'
+tag         = require 'gulp-tag-version'
+uglify      = require 'gulp-uglify'
+watch       = require 'gulp-watch'
+webpack     = require 'webpack-stream'
+yaml        = require 'js-yaml'
+yargs       = require 'yargs'
 
 
 # Grab command line arguments.
@@ -43,7 +43,7 @@ else
 
 
 # Compiles all CoffeeScript files into a single concatenated JavaScript file.
-gulp.task 'coffee', 'Transpiles CoffeeScript to JavaScript', ->
+gulp.task 'coffee', 'Transpiles CoffeeScript to JavaScript.', ->
   gulp.src config.path.src.coffee + '/**/*.coffee'
   .pipe sourcemaps.init()
   .pipe concat(config.app.main)
@@ -85,9 +85,25 @@ gulp.task 'clean', 'Cleans project paths.', ->
     gutil.log 'Deleted files and folders: \n\t', paths.join('\t\n')
 
 
+# Builds the entire project.
 gulp.task 'build', 'Builds the project.', ->
   runsequence 'clean', 'bundle', 'uglify'
 , {
   options:
     'production': 'Build for production environment.'
 }
+
+
+# Generate tasks for bumping project versions and tagging.
+_.each {
+  patch: 'Bump the package patch version.'
+  minor: 'Bump the package minor version.'
+  major: 'Bump the package major version.'
+}, (description, importance) ->
+  gulp.task importance, description, ->
+    gulp.src ['./package.json']
+    .pipe bump({type: importance})
+    .pipe gulp.dest './'
+    .pipe git.commit "Bumps package #{importance} version."
+    .pipe filter 'package.json'
+    .pipe tag_version()

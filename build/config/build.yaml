@@ -4,6 +4,13 @@ app:
   entry:    bootstrap.coffee
 
 
+
+test:
+
+  entry:    test.html.jade
+
+
+
 # Build paths. All paths should be relative to the project root.
 path:
 
@@ -37,6 +44,8 @@ path:
 
   # Generated documentation glob.
   doc:          doc
+
+
 
 # Build options passed to tools in the gulpfile.
 options:

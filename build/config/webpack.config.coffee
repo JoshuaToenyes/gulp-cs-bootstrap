@@ -1,8 +1,8 @@
-_    = require 'lodash'
-fs   = require 'fs'
-path = require 'path'
-yaml = require 'js-yaml'
-
+_                 = require 'lodash'
+fs                = require 'fs'
+path              = require 'path'
+yaml              = require 'js-yaml'
+HtmlWebpackPlugin = require 'html-webpack-plugin'
 
 # Load and parse the build configuration.
 config = yaml.safeLoad fs.readFileSync __dirname + '/build.yaml'
@@ -13,11 +13,7 @@ module.exports =
 
 
   # The base directory for resolving the entry option.
-  context: "#{__dirname}/../../#{config.path.src.coffee}"
-
-
-  # The entry point for the bundle.
-  entry: config.app.entry
+  context: "#{__dirname}/../../"
 
 
   # Various output options, to give us a single bundle.js file with everything
@@ -42,6 +38,7 @@ module.exports =
       "#{__dirname}/../../#{config.path.src.sass}"
       "#{__dirname}/../../#{config.path.src.templates}"
       "#{__dirname}/../../#{config.path.assets}"
+      "#{__dirname}/../../#{config.path.test}"
     ]
 
     # Extensions used to resolve modules.
@@ -52,7 +49,7 @@ module.exports =
     # location, as opposed to node_modules based modules.
     # @see https://webpack.github.io/docs/configuration.html#resolve-alias
     alias:
-      some_lib: path.join(__dirname, "some/location")
+      some_lib: path.join(__dirname, 'some/location')
 
 
   # Source map option.
@@ -66,30 +63,62 @@ module.exports =
       {
         test: /\.coffee$/,
         loader: 'coffee-loader'
-      }, {
+      }
+      {
         test: /\.jade$/,
+        exclude: /\.html\.jade$/,
         loader: 'jade-loader'
-      }, {
+      }
+      {
+        test: /\.html\.jade$/,
+        loaders: ['file?name=index.html', 'jade-html']
+      }
+      {
         test: /\.(jpe?g|png|gif|svg)$/i
         loaders: [
           'file?hash=sha512&digest=hex&name=[hash].[ext]'
           'image-webpack?bypassOnDebug&optimizationLevel=7&interlaced=false']
-      }, {
+      }
+      {
         test: /\.sass$/
         exclude: /\.useable\.sass$/
-        loaders: ["style", "css-loader?sourceMap", "sass?sourceMap&indentedSyntax=true"]
-      }, {
+        loaders: [
+          'style',
+          'css-loader?sourceMap',
+          'sass?sourceMap&indentedSyntax=true']
+      }
+      {
         test: /\.scss$/
         exclude: /\.useable\.scss$/
-        loaders: ["style", "css-loader?sourceMap", "sass?sourceMap"]
-      }, {
+        loaders: [
+          'style',
+          'css-loader?sourceMap',
+          'sass?sourceMap']
+      }
+      {
         test: /\.useable\.sass$/
-        loaders: ["style/useable", "css-loader?sourceMap", "sass?sourceMap=true&sourceMapContents=true&indentedSyntax=true&sourceMapEmbed=true"]
-      }, {
+        loaders: [
+          'style/useable',
+          'css-loader?sourceMap',
+          'sass?sourceMap=true&sourceMapContents=true&indentedSyntax=true&sourceMapEmbed=true']
+      }
+      {
         test: /\.useable\.scss$/
-        loaders: ["style/useable", "css-loader?sourceMap", "sass?sourceMap=true&sourceMapContents=true&sourceMapEmbed=true"]
+        loaders: [
+          'style/useable',
+          'css-loader?sourceMap',
+          'sass?sourceMap=true&sourceMapContents=true&sourceMapEmbed=true']
       }
     ]
+
+
+  # Webpack plugin configuration.
+  plugins: [
+
+    # Creates a simple index.html file which includes the entry-point bundles.
+    # @see https://github.com/ampedandwired/html-webpack-plugin
+    new HtmlWebpackPlugin()
+  ]
 
 
   # Include mocks for when node.js specific modules may be required

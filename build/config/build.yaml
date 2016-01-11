@@ -54,7 +54,7 @@ options:
     # @see http://webpack.github.io/docs/list-of-plugins.html#uglifyjsplugin
     uglify:
       compress:
-        warnings: true
+        warnings: false
       sourceMap: false
 
   # Debug (default for development) options.
@@ -70,5 +70,5 @@ options:
     # @see http://webpack.github.io/docs/list-of-plugins.html#uglifyjsplugin
     uglify:
       compress:
-        warnings: true
+        warnings: false
       sourceMap: true

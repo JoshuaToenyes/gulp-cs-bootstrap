@@ -22,7 +22,7 @@
     "gulp": "~3.9",
     "gulp-bump": "~1.0",
     "gulp-coffee": "~2.3",
-    "gulp-coffeelint": "~0.6",
+    "gulp-coffeelint": "^0.6.0",
     "gulp-concat": "~2.6",
     "gulp-filter": "~3.0",
     "gulp-git": "~1.6",

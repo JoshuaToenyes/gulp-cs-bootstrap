@@ -101,13 +101,11 @@ gulp.task 'clean', 'Cleans project paths.', ->
     config.path.doc
   ]
   del cleanPaths
-  .then (paths) ->
-    gutil.log 'Deleted files and folders: \n\t', paths.join('\t\n')
 
 
 # Builds the entire project.
 gulp.task 'build', 'Builds the project.', ->
-  runsequence 'clean', 'bundle'
+  runsequence ['lint', 'clean'], 'bundle'
 , {
   options: bundleOptions
 }
@@ -132,6 +130,7 @@ gulp.task 'opendocs', 'Opens the docs in the defaul browser', ['doc'], ->
   .pipe open()
 
 
+# Starts Webpack in watch mode.
 gulp.task 'watch', 'Enables watch-mode for Webpack', ->
   webpackConfig.watch = true
   gulp.start 'bundle'
@@ -140,13 +139,25 @@ gulp.task 'watch', 'Enables watch-mode for Webpack', ->
 }
 
 
-gulp.task 'sass-lint', 'Lints SASS files.', ->
+# Lints all SASS source files.
+gulp.task 'sasslint', 'Lints SASS files.', ->
   gulp.src config.path.src.sass + '/**/*.sass'
   .pipe sassLint()
   .pipe sassLint.format()
   .pipe sassLint.failOnError()
 
-gulp.task 'coffee-lint', 'Lints CoffeeScript files.', ->
+
+# Lints all CoffeeScript source files.
+gulp.task 'coffeelint', 'Lints CoffeeScript files.', ->
+  gulp.src config.path.src.coffee + '/**/*.coffee'
+  .pipe coffeelint
+    optFile: './.coffeelint.json'
+  .pipe coffeelint.reporter()
+
+
+# Builds the entire project.
+gulp.task 'lint', 'Lints the project.', ->
+  runsequence 'sasslint', 'coffeelint'
 
 
 # Generate tasks for bumping project versions and tagging.

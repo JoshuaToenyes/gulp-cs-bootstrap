@@ -15,6 +15,7 @@ open        = require 'gulp-open'
 path        = require 'path'
 rename      = require 'gulp-rename'
 runsequence = require 'run-sequence'
+sassLint    = require 'gulp-sass-lint'
 shell       = require 'gulp-shell'
 sourcemaps  = require 'gulp-sourcemaps'
 tag         = require 'gulp-tag-version'
@@ -137,6 +138,15 @@ gulp.task 'watch', 'Enables watch-mode for Webpack', ->
 , {
   options: bundleOptions
 }
+
+
+gulp.task 'sass-lint', 'Lints SASS files.', ->
+  gulp.src config.path.src.sass + '/**/*.sass'
+  .pipe sassLint()
+  .pipe sassLint.format()
+  .pipe sassLint.failOnError()
+
+gulp.task 'coffee-lint', 'Lints CoffeeScript files.', ->
 
 
 # Generate tasks for bumping project versions and tagging.

@@ -1,0 +1,137 @@
+#########################
+## Sample Sass Lint File
+#########################
+# Linter Options
+
+options:
+
+  # Don't merge default rules
+  merge-default-rules: false
+
+  # Set the formatter to 'html'
+  formatter: stylish
+
+
+# File Options
+files:
+  include: 'sass/**/*.s+(a|c)ss'
+  ignore:
+    - 'sass/vendor/**/*.*'
+
+
+# Rule Configuration
+rules:
+
+  border-zero:
+      - 2
+      - convention: 'none'
+
+  class-name-format:
+    - 2
+    - allow-leading-underscore: false
+      convention: hyphenatedlowercase
+
+  clean-import-paths: 2
+
+  empty-args:
+    - 2
+    - include: true
+
+  empty-line-between-blocks:
+    - 2
+    - include: true
+
+  extends-before-declarations: 2
+
+  extends-before-mixins: 2
+
+  function-name-format:
+    - 2
+    - allow-leading-underscore: false
+      convention: hyphenatedlowercase
+
+  hex-notation:
+    - 2
+    - style: lowercase
+
+  id-name-format:
+    - 2
+    - allow-leading-underscore: false
+      convention: hyphenatedlowercase
+
+  leading-zero:
+    - 2
+    - include: true
+
+  mixin-name-format:
+    - 2
+    - allow-leading-underscore: false
+      convention: hyphenatedlowercase
+
+  mixins-before-declarations: 2
+
+  nesting-depth: 1
+
+  no-css-comments: 1
+
+  no-debug: 1
+
+  no-duplicate-properties: 2
+
+  no-empty-rulesets: 1
+
+  no-ids: 2
+
+  no-important: 2
+
+  no-invalid-hex: 2
+
+  no-mergeable-selectors: 2
+
+  no-misspelled-properties: 2
+
+  no-qualifying-elements:
+    - 2
+    - allow-element-with-attribute: true
+
+  no-trailing-zero: 1
+
+  no-transition-all: 1
+
+  no-warn: 1
+
+  one-declaration-per-line: 2
+
+  placeholder-in-extend: 1
+
+  placeholder-name-format:
+    - 2
+    - allow-leading-underscore: false
+      convention: hyphenatedlowercase
+
+  property-sort-order: 1
+
+  quotes:
+    - 1
+    - style: single
+
+  shorthand-values: 2
+
+  single-line-per-selector: 2
+
+  space-after-colon: 2
+
+  space-after-comma: 2
+
+  space-around-operator: 2
+
+  space-between-parens: 2
+
+  url-quotes: 2
+
+  variable-name-format:
+    - 2
+    - allow-leading-underscore: false
+      convention: hyphenatedlowercase
+
+  zero-unit: 2

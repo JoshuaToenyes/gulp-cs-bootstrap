@@ -64,6 +64,11 @@ if !argv.skipUglifyjs
   webpackConfig.plugins.push uglifyJSPlugin
 
 
+# Common bundle options.
+bundleOptions =
+  'production': 'Build for production environment.'
+  'skip-uglifyjs': 'Skips compression with UglifyJS.'
+
 
 # Compiles all CoffeeScript files into a single concatenated JavaScript file.
 gulp.task 'coffee', 'Transpiles CoffeeScript to JavaScript.', ->
@@ -83,8 +88,7 @@ gulp.task 'bundle', 'Bundles project files using Webpack.', ->
   .pipe gulp.dest config.path.target
   .on 'error', gutil.log
 , {
-  options:
-    'production': 'Bundle for production environment.'
+  options: bundleOptions
 }
 
 
@@ -104,9 +108,7 @@ gulp.task 'clean', 'Cleans project paths.', ->
 gulp.task 'build', 'Builds the project.', ->
   runsequence 'clean', 'bundle'
 , {
-  options:
-    'production': 'Build for production environment.'
-    'skip-uglifyjs': 'Skips compression with UglifyJS.'
+  options: bundleOptions
 }
 
 
@@ -123,16 +125,25 @@ gulp.task 'doc', 'Generates Groc documentation.', shell.task [
   ]
 
 
+# Generates and opens the documentation in the default browser.
 gulp.task 'opendocs', 'Opens the docs in the defaul browser', ['doc'], ->
   gulp.src 'doc/index.html'
   .pipe open()
 
 
+gulp.task 'watch', 'Enables watch-mode for Webpack', ->
+  webpackConfig.watch = true
+  gulp.start 'bundle'
+, {
+  options: bundleOptions
+}
+
+
 # Generate tasks for bumping project versions and tagging.
 _.each {
-  patch: 'Bump and tags the package patch version.'
-  minor: 'Bump and tags the package minor version.'
-  major: 'Bump and tags the package major version.'
+  patch: 'Bump, commit, and tag the package patch version.'
+  minor: 'Bump, commit, and tag the package minor version.'
+  major: 'Bump, commit, and tag the package major version.'
 }, (description, importance) ->
   gulp.task importance, description, ->
     gulp.src ['./package.json']

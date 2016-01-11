@@ -1,5 +1,6 @@
 {
   "glob": [
+    "*",
     "src/**/*",
     "build/**/*",
     "README.md"

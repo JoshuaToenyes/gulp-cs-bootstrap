@@ -1,3 +1,4 @@
+_    = require 'lodash'
 fs   = require 'fs'
 path = require 'path'
 yaml = require 'js-yaml'
@@ -16,16 +17,14 @@ module.exports =
 
 
   # The entry point for the bundle.
-  entry: "./#{config.app.entry}"
+  entry: config.app.entry
 
 
   # Various output options, to give us a single bundle.js file with everything
   # resolved and concatenated.
   # @see https://webpack.github.io/docs/configuration.html#output
   output:
-    filename: config.app.main
-    pathinfo: true
-    sourceMapFilename: 'maps/[file].map'
+    sourceMapFilename: '[file].map'
 
 
   # Where to resolve our loaders.
@@ -42,6 +41,7 @@ module.exports =
       "#{__dirname}/../../#{config.path.src.coffee}"
       "#{__dirname}/../../#{config.path.src.sass}"
       "#{__dirname}/../../#{config.path.src.templates}"
+      "#{__dirname}/../../#{config.path.assets}"
     ]
 
     # Extensions used to resolve modules.
@@ -63,8 +63,32 @@ module.exports =
   # Our configured loaders.
   module:
     loaders: [
-      {test: /\.coffee$/, loader: 'coffee-loader' }
-      {test: /\.jade$/, loader: 'jade-loader' }
+      {
+        test: /\.coffee$/,
+        loader: 'coffee-loader'
+      }, {
+        test: /\.jade$/,
+        loader: 'jade-loader'
+      }, {
+        test: /\.(jpe?g|png|gif|svg)$/i
+        loaders: [
+          'file?hash=sha512&digest=hex&name=[hash].[ext]'
+          'image-webpack?bypassOnDebug&optimizationLevel=7&interlaced=false']
+      }, {
+        test: /\.sass$/
+        exclude: /\.useable\.sass$/
+        loaders: ["style", "css-loader?sourceMap", "sass?sourceMap&indentedSyntax=true"]
+      }, {
+        test: /\.scss$/
+        exclude: /\.useable\.scss$/
+        loaders: ["style", "css-loader?sourceMap", "sass?sourceMap"]
+      }, {
+        test: /\.useable\.sass$/
+        loaders: ["style/useable", "css-loader?sourceMap", "sass?sourceMap=true&sourceMapContents=true&indentedSyntax=true&sourceMapEmbed=true"]
+      }, {
+        test: /\.useable\.scss$/
+        loaders: ["style/useable", "css-loader?sourceMap", "sass?sourceMap=true&sourceMapContents=true&sourceMapEmbed=true"]
+      }
     ]
 
 

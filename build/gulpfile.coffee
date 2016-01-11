@@ -170,6 +170,6 @@ _.each {
     gulp.src ['./package.json']
     .pipe bump({type: importance})
     .pipe gulp.dest './'
-    .pipe git.commit "Bumps package #{importance} version."
+    .pipe git.commit "Bump package #{importance} version."
     .pipe filter 'package.json'
     .pipe tag()

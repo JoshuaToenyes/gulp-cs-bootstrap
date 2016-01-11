@@ -2,7 +2,7 @@
   "name": "gulp-cs-boostrap",
   "description": "Bootstrap project.",
   "author": "Joshua Toenyes <joshua.toenyes@me.com>",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "repository": {
     "type": "git",
     "url": "https://github.com/JoshuaToenyes/gulp-cs-bootstrap"

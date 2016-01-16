@@ -1,2 +1,3 @@
 # Ignore all JavaScript files in the test directory.
-*.js
+selenium/*.js
+unit/*.js

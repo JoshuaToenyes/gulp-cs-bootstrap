@@ -1,4 +1,5 @@
 _           = require 'lodash'
+browserSync = require 'browser-sync'
 bump        = require 'gulp-bump'
 coffee      = require 'gulp-coffee'
 coffeelint  = require 'gulp-coffeelint'
@@ -16,10 +17,13 @@ path        = require 'path'
 rename      = require 'gulp-rename'
 runsequence = require 'run-sequence'
 sassLint    = require 'gulp-sass-lint'
+sauce       = require 'sauce-connect-launcher'
+selenium    = require 'selenium-standalone'
 shell       = require 'gulp-shell'
 sourcemaps  = require 'gulp-sourcemaps'
 tag         = require 'gulp-tag-version'
 watch       = require 'gulp-watch'
+webdriver   = require 'gulp-webdriver'
 webpack     = require 'webpack-stream'
 yaml        = require 'js-yaml'
 yargs       = require 'yargs'
@@ -78,11 +82,18 @@ getBundleOptions = (type) ->
 gulp.task 'coffee', 'Transpiles CoffeeScript to JavaScript.', ->
   gulp.src config.path.src.coffee + '/**/*.coffee'
   .pipe sourcemaps.init()
-  .pipe concat(config.app.main)
   .pipe coffee()
   .pipe sourcemaps.write config.path.maps.js
   .pipe gulp.dest config.path.target
   .on 'error', gutil.log
+
+
+
+# Compiles all CoffeeScript selenium test files.
+gulp.task 'coffee:selenium', false, ->
+  gulp.src config.path.test.selenium + '/**/*.coffee'
+  .pipe coffee()
+  .pipe gulp.dest config.path.test.selenium
 
 
 
@@ -100,9 +111,11 @@ gulp.task 'bundle', 'Bundles project files using Webpack.', ->
 
   switch env
     when 'test'
-      entryRoot = config.path.test.unit.coffee
+      entryRoot = config.path.test.unit
     else
       entryRoot = config.path.src.coffee
+
+
 
   gulp.src entryRoot + '/' + webpackConfig.entry
   .pipe webpack webpackConfig
@@ -115,13 +128,23 @@ gulp.task 'bundle', 'Bundles project files using Webpack.', ->
 
 
 # Cleans project paths.
-gulp.task 'clean', 'Cleans project paths.', ->
+gulp.task 'clean', 'Cleans project paths.', ['clean:test'], ->
   cleanPaths = [
     config.path.target
     config.path.tmp
     config.path.doc
   ]
   del cleanPaths
+
+
+
+# Cleans-up compiled selenium test files.
+gulp.task 'clean:selenium', false, ->
+  del config.path.test.selenium + '/**/*.js'
+
+
+
+gulp.task 'clean:test', 'Cleans up test files.', ['clean:selenium']
 
 
 
@@ -206,7 +229,7 @@ _.each {
 
 
 
-gulp.task 'run-karma', false, (done) ->
+gulp.task 'karma', false, (done) ->
   cb = -> done()
   console.log !argv.watch
   options =
@@ -217,9 +240,85 @@ gulp.task 'run-karma', false, (done) ->
 
 
 # Simple task to tag the git repo at it's current version as-specified by
-gulp.task 'karma', 'Run Karma tests.', ->
+gulp.task 'test:karma', 'Run Karma tests.', ->
   env = 'test'
-  runsequence ['clean'], 'bundle', 'run-karma'
+  runsequence ['clean'], 'bundle', 'karma'
 , {
   'watch': 'Watch for file changes and re-run tests.'
 }
+
+
+# Starts a webserver which serves files from the configured
+# `config.path.target` directory.
+gulp.task 'serve', 'Serve files located in target directory.', (done) ->
+  browserSync
+    logLevel: 'silent'
+    notify: false
+    open: false
+    port: 9000
+    codeSync: false
+    server:
+      baseDir: config.path.target
+    ui: false
+  , done
+
+
+
+# Runs selenium tests remotely on SauceLabs
+gulp.task 'test:sauce', 'Run selenium tests on SauceLabs.', [
+  'sauce:connect', 'coffee:selenium'], ->
+  gulp.src 'test/config/wdio-saucelabs.conf.js'
+  .pipe webdriver()
+  .once 'end', ->
+    sauce.child.close()
+    browserSync.exit()
+
+
+
+# Launches SauceConnect, creating a private testing VPN between localhost
+# (where the testing web server is located) and SauceLabs.
+gulp.task 'sauce:connect', false, ['serve'], (done) ->
+  credentials =
+    username: process.env.SAUCE_USERNAME
+    accessKey: process.env.SAUCE_ACCESS_KEY
+    verbose: true
+    verboseDebugging: true
+    #doctor: true
+    logger: gutil.log
+  sauce credentials, (err, child) ->
+    if err
+      gutil.log err
+    else
+      sauce.child = child
+    done()
+
+
+
+# Runs selenium tests on a local selenium server.
+gulp.task 'test:selenium', 'Run selenium tests.', [
+  'serve', 'selenium:start', 'coffee:selenium'], ->
+  gulp.src 'test/config/wdio-local.conf.js'
+  .pipe webdriver()
+  .once 'end', ->
+    selenium.child.kill()
+    browserSync.exit()
+
+
+
+# Installs the local standalone selenium installation.
+# **Note: The `logger` property is set to an empty function which suppresses
+# output. If you're having problems installing selenium, replace it with
+# `gutil.log`.
+gulp.task 'selenium:install', false, (done) ->
+  selenium.install
+    logger: ->
+  , done
+
+
+
+# Starts-up the standalone selenium installation.
+gulp.task 'selenium:start', false, ['selenium:install'], (done) ->
+  selenium.start (err, child) ->
+    if err then return
+    selenium.child = child
+    done()

@@ -14,6 +14,11 @@ config = yaml.safeLoad fs.readFileSync __dirname + '/build.yaml'
 # Export our Webpack configuration.
 module.exports =
 
+  # Disable error tolerance and cause Webpack to exit with a non-zero exit code
+  # on the first error. This is especially useful with CI systems which monitor
+  # exit codes to valid builds, etc.
+  # @see https://webpack.github.io/docs/configuration.html#bail
+  bail: true
 
   # The base directory for resolving the entry option.
   context: "#{__dirname}/../../"

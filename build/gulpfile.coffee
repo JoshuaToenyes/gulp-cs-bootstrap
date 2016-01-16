@@ -11,6 +11,7 @@ git         = require 'gulp-git'
 gulp        = require('gulp-help')(require 'gulp')
 gulpif      = require 'gulp-if'
 gutil       = require 'gulp-util'
+karma       = require 'karma'
 open        = require 'gulp-open'
 path        = require 'path'
 rename      = require 'gulp-rename'
@@ -47,36 +48,30 @@ webpackConfig.plugins ?= []
 
 
 
-# Set production/debug options.
-if argv.production
-
-  # Merge-in production Webpack config.
-  _.merge webpackConfig, config.options.production.webpack
-
-  # Instantiate production Webpack plugins.
-  uglifyJSPlugin = new UglifyJsPlugin(config.options.production.uglify)
-
-# Debug environment.
-else
-
-  # Merge debug Webpack config.
-  _.merge webpackConfig, config.options.debug.webpack
-
-  # Instantiate production Webpack plugins.
-  uglifyJSPlugin = new UglifyJsPlugin(config.options.debug.uglify)
+# Default all config options, then remove the `default` key because we shouldn't
+# use it.
+_.forEach config.env, (value, key) ->
+  if key is 'default' then return
+  _.defaultsDeep config.env[key], config.env.default
+config.env = _.omit config.env, 'default'
 
 
 
-# If we're not skipping UglifyJS compression, add-in the plugin.
-if !argv.skipUglifyjs
-  webpackConfig.plugins.push uglifyJSPlugin
+# Set the build environment (default to "debug").
+env = 'debug'
+_.forEach ['production', 'test'], (v) ->
+  if argv[v] then env = v
 
 
 
-# Common bundle options.
-bundleOptions =
-  'production': 'Build for production environment.'
-  'skip-uglifyjs': 'Skips compression with UglifyJS.'
+# Returns nicely formatted bundle options for `gulp help`.
+getBundleOptions = (type) ->
+  return {
+    'production': "#{type} for production environment."
+    'test': "#{type} for testing environment."
+    'debug': "#{type} for development environment."
+    'skip-uglifyjs': "Skip compression with UglifyJS."
+  }
 
 
 
@@ -94,22 +89,29 @@ gulp.task 'coffee', 'Transpiles CoffeeScript to JavaScript.', ->
 
 # Bundles this project as defined by the Webpack configuration file.
 gulp.task 'bundle', 'Bundles project files using Webpack.', ->
-  gulp.src config.path.src.coffee + '/' + config.app.entry
+  # Merge-in the environment configuration.
+  _.merge webpackConfig, config.env[env].webpack
+
+  # Instantiate production Webpack plugins.
+  uglifyJSPlugin = new UglifyJsPlugin(config.env[env].uglify)
+
+  # If we're not explicitly skipping UglifyJS compression, add-in the plugin.
+  if !argv.skipUglifyjs
+    webpackConfig.plugins.push uglifyJSPlugin
+
+  switch env
+    when 'test'
+      entryRoot = config.path.test.unit.coffee
+    else
+      entryRoot = config.path.src.coffee
+
+  gulp.src entryRoot + '/' + webpackConfig.entry
   .pipe webpack webpackConfig
   .pipe gulp.dest config.path.target
   .on 'error', gutil.log
 , {
-  options: bundleOptions
+  options: getBundleOptions('Bundle')
 }
-
-
-
-# Bundles this project as defined by the Webpack configuration file.
-gulp.task 'bundle-tests', 'Bundles test files using Webpack.', ->
-  gulp.src config.path.test + '/' + config.test.entry
-  .pipe webpack webpackConfig
-  .pipe gulp.dest config.path.target
-  .on 'error', gutil.log
 
 
 
@@ -128,7 +130,7 @@ gulp.task 'clean', 'Cleans project paths.', ->
 gulp.task 'build', 'Builds the project.', ->
   runsequence ['lint', 'clean'], 'bundle'
 , {
-  options: bundleOptions
+  options: getBundleOptions('Build')
 }
 
 
@@ -160,7 +162,7 @@ gulp.task 'watch', 'Enables watch-mode for Webpack', ->
   webpackConfig.watch = true
   gulp.start 'bundle'
 , {
-  options: bundleOptions
+  options: getBundleOptions('Watch and bundle')
 }
 
 
@@ -202,3 +204,23 @@ _.each {
     .pipe git.commit "Bump package #{importance} version."
     .pipe filter 'package.json'
     .pipe tag()
+
+
+
+gulp.task 'run-karma', false, (done) ->
+  cb = -> done()
+  console.log !argv.watch
+  options =
+    configFile: __dirname + '/../karma.conf.coffee'
+    singleRun: !argv.watch
+  new karma.Server(options, cb).start()
+
+
+
+# Simple task to tag the git repo at it's current version as-specified by
+gulp.task 'karma', 'Run Karma tests.', ->
+  env = 'test'
+  runsequence ['clean'], 'bundle', 'run-karma'
+, {
+  'watch': 'Watch for file changes and re-run tests.'
+}

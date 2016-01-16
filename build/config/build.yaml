@@ -25,7 +25,9 @@ path:
   lib:          lib
 
   # Tests directory.
-  test:         test
+  test:
+    unit:
+      coffee:   test/unit
 
   # Output target directories.
   target:       dist
@@ -47,37 +49,50 @@ path:
 
 
 
-# Build options passed to tools in the gulpfile.
-options:
+# Environment build options.
+env:
 
-  # Production specific options.
-  production:
+  # The common options are set initially, then overridden by each environment
+  # as necessary.
+  default:
 
-    # Webpack production options.
+    # Webpack options.
     webpack:
+      entry:        bootstrap.coffee
       output:
-        pathinfo: false
-        publicPath: http://yourcdn.com/
+        pathinfo:   true
+        publicPath: /gulp-cs-bootstrap/dist/
 
-    # Production options passed to UglifyJS Webpack plugin.
+    # Webpack UglifyJS plugin options.
     # @see http://webpack.github.io/docs/list-of-plugins.html#uglifyjsplugin
     uglify:
       compress:
         warnings: false
       sourceMap: false
 
-  # Debug (default for development) options.
-  debug:
 
-    # Webpack debug options.
+  # Production specific options.
+  production:
+
+    # Webpack options.
     webpack:
       output:
-        pathinfo: true
-        publicPath: /gulp-cs-bootstrap/dist/
+        pathinfo:   false
+        publicPath: http://yourcdn.com/
 
-    # Debug options passed to UglifyJS Webpack plugin.
-    # @see http://webpack.github.io/docs/list-of-plugins.html#uglifyjsplugin
+
+  # Test-build configuration. Used for unit-testing.
+  test:
+
+    # Webpack test build options. Entry point is resolved from
+    # `path.test.unit.coffee` build option.
+    webpack:
+      entry:        test-bootstrap.coffee
+
+
+  # Debug (development) options.
+  debug:
+
+    # Enable sourcemap output.
     uglify:
-      compress:
-        warnings: false
       sourceMap: true

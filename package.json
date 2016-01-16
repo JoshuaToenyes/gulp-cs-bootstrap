@@ -44,9 +44,17 @@
     "jade-html-loader": "0.0.3",
     "jade-loader": "^0.8.0",
     "js-yaml": "~3.4",
+    "karma": "^0.13.19",
+    "karma-chrome-launcher": "^0.2.2",
+    "karma-firefox-launcher": "^0.1.7",
+    "karma-mocha": "^0.2.1",
+    "karma-mocha-reporter": "^1.1.5",
+    "karma-phantomjs-launcher": "^0.2.3",
+    "karma-safari-launcher": "^0.1.1",
     "lodash": "^3.10.1",
     "mocha": "~2.3",
     "node-sass": "^3.4.2",
+    "phantomjs": "^1.9.19",
     "run-sequence": "~1.1",
     "sass-loader": "^3.1.2",
     "sinon": "~1.17",
@@ -55,5 +63,7 @@
     "webpack-stream": "~3.1",
     "yargs": "^3.31.0"
   },
-  "scripts": {}
+  "scripts": {
+    "test": "gulp test"
+  }
 }

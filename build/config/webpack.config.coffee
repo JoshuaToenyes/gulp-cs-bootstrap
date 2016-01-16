@@ -4,8 +4,11 @@ path              = require 'path'
 yaml              = require 'js-yaml'
 HtmlWebpackPlugin = require 'html-webpack-plugin'
 
+
+
 # Load and parse the build configuration.
 config = yaml.safeLoad fs.readFileSync __dirname + '/build.yaml'
+
 
 
 # Export our Webpack configuration.
@@ -32,17 +35,20 @@ module.exports =
   # @see https://webpack.github.io/docs/configuration.html#resolve
   resolve:
 
+    modulesDirectories: ['node_modules']
+
     # Directories that contain our modules
     root: [
       "#{__dirname}/../../#{config.path.src.coffee}"
+      "#{__dirname}/../../#{config.path.test.unit.coffee}"
+      "#{__dirname}/../../node_modules"
       "#{__dirname}/../../#{config.path.src.sass}"
       "#{__dirname}/../../#{config.path.src.templates}"
       "#{__dirname}/../../#{config.path.assets}"
-      "#{__dirname}/../../#{config.path.test}"
     ]
 
     # Extensions used to resolve modules.
-    extensions: ['', '.coffee', '.jade']
+    extensions: ['', '.js', '.coffee', '.jade']
 
     # Replace modules with other modules or paths (like the 'paths' option
     # with Require.js). This is for modules where we explicitly control the

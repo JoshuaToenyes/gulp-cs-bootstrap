@@ -2,7 +2,7 @@
   "name": "gulp-cs-boostrap",
   "description": "Bootstrap project.",
   "author": "Joshua Toenyes <joshua.toenyes@me.com>",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/JoshuaToenyes/gulp-cs-bootstrap"
@@ -10,6 +10,7 @@
   "license": "SEE LICENSE FILE",
   "dependencies": {},
   "devDependencies": {
+    "browser-sync": "^2.11.0",
     "chai": "~3.4",
     "coffee-loader": "~0.7",
     "coffee-script": "~1.10",
@@ -17,8 +18,8 @@
     "del": "~2.2",
     "extract-text-webpack-plugin": "^1.0.1",
     "file-loader": "^0.8.5",
-    "groc": "https://github.com/JoshuaToenyes/groc.git",
-    "groc-template-clean": "https://github.com/JoshuaToenyes/groc-template-clean.git",
+    "groc": "JoshuaToenyes/groc",
+    "groc-template-clean": "JoshuaToenyes/groc-template-clean",
     "gulp": "~3.9",
     "gulp-bump": "~1.0",
     "gulp-coffee": "~2.3",
@@ -38,20 +39,36 @@
     "gulp-tag-version": "~1.3",
     "gulp-util": "~3.0",
     "gulp-watch": "~4.3",
+    "gulp-webdriver": "^1.0.2",
+    "html-webpack-plugin": "^2.4.0",
     "image-webpack-loader": "^1.6.2",
     "jade": "^1.11.0",
+    "jade-html-loader": "0.0.3",
     "jade-loader": "^0.8.0",
     "js-yaml": "~3.4",
+    "karma": "^0.13.19",
+    "karma-chrome-launcher": "^0.2.2",
+    "karma-firefox-launcher": "^0.1.7",
+    "karma-mocha": "^0.2.1",
+    "karma-mocha-reporter": "^1.1.5",
+    "karma-phantomjs-launcher": "^0.2.3",
+    "karma-safari-launcher": "^0.1.1",
     "lodash": "^3.10.1",
     "mocha": "~2.3",
     "node-sass": "^3.4.2",
+    "phantomjs": "^1.9.19",
     "run-sequence": "~1.1",
     "sass-loader": "^3.1.2",
+    "sauce-connect": "^0.1.1",
+    "sauce-connect-launcher": "^0.14.0",
+    "selenium-standalone": "^4.8.0",
     "sinon": "~1.17",
     "style-loader": "^0.13.0",
     "webpack": "^1.12.10",
     "webpack-stream": "~3.1",
     "yargs": "^3.31.0"
   },
-  "scripts": {}
+  "scripts": {
+    "test": "gulp test"
+  }
 }

@@ -1,6 +1,5 @@
 _           = require 'lodash'
 bump        = require 'gulp-bump'
-clean       = require 'gulp-clean'
 coffee      = require 'gulp-coffee'
 coffeelint  = require 'gulp-coffeelint'
 concat      = require 'gulp-concat'

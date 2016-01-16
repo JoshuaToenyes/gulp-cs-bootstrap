@@ -215,11 +215,11 @@ gulp.task 'lint', 'Lints the project.', ->
 
 # Generate tasks for bumping project versions and tagging.
 _.each {
-  'bump:patch': 'Bump, commit, and tag the package patch version.'
-  'bump:minor': 'Bump, commit, and tag the package minor version.'
-  'bump:major': 'Bump, commit, and tag the package major version.'
+  patch: 'Bump, commit, and tag the package patch version.'
+  minor: 'Bump, commit, and tag the package minor version.'
+  major: 'Bump, commit, and tag the package major version.'
 }, (description, importance) ->
-  gulp.task importance, description, ->
+  gulp.task 'bump:' + importance, description, ->
     gulp.src ['./package.json']
     .pipe bump({type: importance})
     .pipe gulp.dest './'

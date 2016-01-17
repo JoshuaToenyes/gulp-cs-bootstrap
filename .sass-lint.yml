@@ -33,10 +33,6 @@ rules:
 
   clean-import-paths: 2
 
-  empty-args:
-    - 2
-    - include: true
-
   empty-line-between-blocks:
     - 2
     - include: true

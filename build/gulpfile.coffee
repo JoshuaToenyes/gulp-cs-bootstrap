@@ -115,8 +115,6 @@ gulp.task 'bundle', 'Bundles project files using Webpack.', ->
     else
       entryRoot = config.path.src.coffee
 
-
-
   gulp.src entryRoot + '/' + webpackConfig.entry
   .pipe webpack webpackConfig
   .pipe gulp.dest config.path.target
@@ -179,8 +177,14 @@ gulp.task 'opendocs', 'Opens the docs in the defaul browser', ['doc'], ->
 
 
 
+# Watch files and bundle/lint during development.
+gulp.task 'watch', 'Watch files and lint and bundle.', [
+  'serve:watch', 'watch:bundle', 'watch:lint']
+
+
+
 # Starts Webpack in watch mode.
-gulp.task 'watch', 'Enables watch-mode for Webpack', ->
+gulp.task 'watch:bundle', 'Enables watch-mode for Webpack', ->
   webpackConfig.watch = true
   gulp.start 'bundle'
 , {
@@ -189,8 +193,26 @@ gulp.task 'watch', 'Enables watch-mode for Webpack', ->
 
 
 
+# Watches CoffeeScript files and lints them as they change.
+gulp.task 'watch:lint:coffee', 'Watch and lint CoffeeScript files.', ->
+  gulp.watch config.path.src.coffee + '/**/*.coffee', ['lint:coffee']
+
+
+
+# Watches SASS files and lints them as they change.
+gulp.task 'watch:lint:sass', 'Watch and lint SASS files.', ->
+  gulp.watch config.path.src.sass+ '/**/*.sass', ['lint:sass']
+
+
+
+# Watch and lint all lintable files as they change.
+gulp.task 'watch:lint', 'Watch and lint all files.', [
+  'watch:lint:coffee', 'watch:lint:sass']
+
+
+
 # Lints all SASS source files.
-gulp.task 'sasslint', 'Lints SASS files.', ->
+gulp.task 'lint:sass', 'Lints SASS files.', ->
   gulp.src config.path.src.sass + '/**/*.sass'
   .pipe sassLint()
   .pipe sassLint.format()
@@ -199,7 +221,7 @@ gulp.task 'sasslint', 'Lints SASS files.', ->
 
 
 # Lints all CoffeeScript source files.
-gulp.task 'coffeelint', 'Lints CoffeeScript files.', ->
+gulp.task 'lint:coffee', 'Lints CoffeeScript files.', ->
   gulp.src config.path.src.coffee + '/**/*.coffee'
   .pipe coffeelint
     optFile: './.coffeelint.json'
@@ -209,7 +231,7 @@ gulp.task 'coffeelint', 'Lints CoffeeScript files.', ->
 
 # Builds the entire project.
 gulp.task 'lint', 'Lints the project.', ->
-  runsequence 'sasslint', 'coffeelint'
+  runsequence 'lint:sass', 'lint:coffee'
 
 
 
@@ -248,6 +270,7 @@ gulp.task 'test:karma', 'Run Karma tests.', ->
 }
 
 
+
 # Starts a webserver which serves files from the configured
 # `config.path.target` directory.
 gulp.task 'serve', 'Serve files located in target directory.', (done) ->
@@ -257,6 +280,21 @@ gulp.task 'serve', 'Serve files located in target directory.', (done) ->
     open: false
     port: 9000
     codeSync: false
+    server:
+      baseDir: config.path.target
+    ui: false
+  , done
+
+
+
+# Starts a webserver which serves files from the configured
+# `config.path.target` directory.
+gulp.task 'serve:watch', 'Serve synchronized files for development.', (done) ->
+  browserSync
+    files: config.path.target
+    notify: false
+    open: 'local'
+    port: 9000
     server:
       baseDir: config.path.target
     ui: false
